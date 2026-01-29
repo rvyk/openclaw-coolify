@@ -9,6 +9,19 @@ CONFIG_FILE="$MOLT_STATE/moltbot.json"
 WORKSPACE_DIR="/home/node/molt"
 
 mkdir -p "$MOLT_STATE" "$CLAW_STATE" "$WORKSPACE_DIR"
+chmod 700 "$MOLT_STATE" "$CLAW_STATE"
+
+# Tighten permissions on config if it exists
+if [ -f "$CONFIG_FILE" ]; then
+  chmod 600 "$CONFIG_FILE"
+fi
+if [ -f "$MOLT_STATE/clawdbot.json" ]; then
+  chmod 600 "$MOLT_STATE/clawdbot.json"
+fi
+
+# Ensure credentials dir exists
+mkdir -p "$MOLT_STATE/credentials"
+chmod 700 "$MOLT_STATE/credentials"
 
 # Ensure aliases work for interactive sessions
 echo "alias fd=fdfind" >> /home/node/.bashrc
@@ -234,6 +247,12 @@ cp -f "$CONFIG_FILE" "$CLAW_STATE/moltbot.json" 2>/dev/null || true
 cp -f "$CONFIG_FILE" "$CLAW_STATE/clawdbot.json" 2>/dev/null || true
 ln -sf "$CONFIG_FILE" "$MOLT_STATE/config.json" 2>/dev/null || true
 ln -sf "$CONFIG_FILE" "$CLAW_STATE/config.json" 2>/dev/null || true
+
+# Run doctor --fix to handle any migrations or permission issues automatically
+if command -v moltbot >/dev/null 2>&1; then
+  echo "🏥 RUNNING MOLTBOT DOCTOR..."
+  moltbot doctor --fix || true
+fi
 
 # Seed Agent Workspaces
 seed_agent() {
