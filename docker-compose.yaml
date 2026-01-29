@@ -66,6 +66,8 @@ services:
     volumes:
       - moltbot-config:/home/node/.moltbot
       - moltbot-workspace:/home/node/molt
+      - moltbot-linkding:/home/node/molt-linkding
+      - moltbot-dbadmin:/home/node/molt-dbadmin
       # Secure: Socket mount removed in favor of proxy
       # - /var/run/docker.sock:/var/run/docker.sock
 
@@ -137,6 +139,8 @@ services:
 volumes:
   moltbot-config:
   moltbot-workspace:
+  moltbot-linkding:
+  moltbot-dbadmin:
   qdrant-data:
   linkding-data:
   miniflux-db:

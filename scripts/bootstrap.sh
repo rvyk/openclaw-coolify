@@ -104,11 +104,31 @@ cat >"$CONFIG_FILE" <<EOF
         "mode": "non-main",
         "scope": "session"
       }
-    }
+    },
+    "list": [
+      {
+        "id": "main",
+        "name": "Moltbot",
+        "default": true,
+        "workspace": "/home/node/molt"
+      },
+      {
+        "id": "linkding",
+        "name": "Linkding Agent",
+        "workspace": "/home/node/molt-linkding"
+      },
+      {
+        "id": "dbadmin",
+        "name": "DB Administrator",
+        "workspace": "/home/node/molt-dbadmin"
+      }
+    ]
   },
+  "bindings": [],
   "tools": {
     "agentToAgent": {
-      "allow": []
+      "enabled": true,
+      "allow": ["main", "linkding", "dbadmin"]
     }
   },
   "messages": {
@@ -208,6 +228,49 @@ cp -f "$CONFIG_FILE" "$CLAW_STATE/moltbot.json" 2>/dev/null || true
 cp -f "$CONFIG_FILE" "$CLAW_STATE/clawdbot.json" 2>/dev/null || true
 ln -sf "$CONFIG_FILE" "$MOLT_STATE/config.json" 2>/dev/null || true
 ln -sf "$CONFIG_FILE" "$CLAW_STATE/config.json" 2>/dev/null || true
+
+# Seed Agent Workspaces
+seed_agent() {
+  local id="$1"
+  local name="$2"
+  local dir="/home/node/molt-$id"
+  if [ "$id" = "main" ]; then dir="/home/node/molt"; fi
+
+  mkdir -p "$dir"
+  if [ ! -f "$dir/AGENTS.md" ]; then
+    cat >"$dir/AGENTS.md" <<EOF
+# AGENTS.md - $name
+This is the workspace for $name.
+EOF
+  fi
+
+  if [ ! -f "$dir/SOUL.md" ]; then
+    case "$id" in
+      linkding)
+        cat >"$dir/SOUL.md" <<EOF
+# SOUL.md - Linkding Agent
+You are the Linkding Bookmark Assistant. Your primary goal is to help the user manage bookmarks.
+EOF
+        ;;
+      dbadmin)
+        cat >"$dir/SOUL.md" <<EOF
+# SOUL.md - DB Administrator
+You are the Database and Container Administrator. You monitor Postgres and manage SQLite subagent sandboxes.
+EOF
+        ;;
+      *)
+        cat >"$dir/SOUL.md" <<EOF
+# SOUL.md - Moltbot
+You are Moltbot, a helpful and premium AI assistant.
+EOF
+        ;;
+    esac
+  fi
+}
+
+seed_agent "main" "Moltbot"
+seed_agent "linkding" "Linkding Agent"
+seed_agent "dbadmin" "DB Administrator"
 
 # Export state directory for the binary
 export CLAWDBOT_STATE_DIR="$MOLT_STATE"
