@@ -449,8 +449,12 @@ export OPENCLAW_STATE_DIR="$OPENCLAW_STATE"
 export CLAWDBOT_STATE_DIR="$OPENCLAW_STATE"
 export MOLTBOT_STATE_DIR="$OPENCLAW_STATE"
 
-# Resolve public URL (Coolify injects SERVICE_URL_OPENCLAW)
-BASE_URL="${SERVICE_URL_OPENCLAW:-http://localhost:18789}"
+# Resolve public URL (Coolify injects SERVICE_FQDN_OPENCLAW)
+if [ -n "$SERVICE_FQDN_OPENCLAW" ]; then
+  BASE_URL="https://${SERVICE_FQDN_OPENCLAW}"
+else
+  BASE_URL="http://localhost:${OPENCLAW_GATEWAY_PORT}"
+fi
 
 if [ "${OPENCLAW_PRINT_ACCESS:-1}" = "1" ]; then
   if [ "${OPENCLAW_BETA:-false}" = "true" ]; then
