@@ -23,9 +23,12 @@ if [ -f "$MOLT_STATE/clawdbot.json" ]; then
 fi
 
 # Ensure credentials dir exists
+# Ensure credentials dir exists
 mkdir -p "$MOLT_STATE/credentials"
+mkdir -p "$OPENCLAW_STATE/credentials"
 mkdir -p "$OPENCLAW_STATE/agents/main/sessions"
 chmod 700 "$MOLT_STATE/credentials"
+chmod 700 "$OPENCLAW_STATE/credentials"
 
 # Universal Permission Hardening (Runtime Fail-safe)
 # Start universal permission hardening
@@ -319,6 +322,7 @@ cat >"$CONFIG_FILE" <<EOF
     }
   },
   "skills": {
+    "allow": ["*"],
     "allowBundled": ["*"],
     "install": {
       "nodeManager": "bun"
@@ -339,7 +343,18 @@ cat >"$CONFIG_FILE" <<EOF
         "enabled": true
       },
       "slack": {
-    "enabled": {}
+        "enabled": true
+      },
+      "signal": {
+        "enabled": true
+      },
+      "imessage": {
+        "enabled": false
+      },
+      "google-antigravity-auth": {
+        "enabled": true
+      }
+    }
   },
   "auth": {
     "profiles": {
@@ -352,16 +367,11 @@ cat >"$CONFIG_FILE" <<EOF
 }
 EOF
 
-# Fix permissions as requested by doctor
-if [ -f "$CONFIG_FILE" ]; then
-    chmod 600 "$CONFIG_FILE"
 fi
 
-# Ensure credentials directory exists (CRITICAL FIX)
-# explicitly using /root/.openclaw/credentials in case vars drift
-mkdir -p /root/.openclaw/credentials
-mkdir -p "$AGENTS_STATE/main/sessions"
-
+# Fix permissions as requested by doctor (ensure it runs after creation or if existing)
+if [ -f "$CONFIG_FILE" ]; then
+    chmod 600 "$CONFIG_FILE"
 fi
 
 # Update TOKEN if it was not set (e.g. if config already existed)
@@ -434,7 +444,6 @@ seed_agent "main" "OpenClaw"
 seed_agent "linkding" "Linkding Agent"
 seed_agent "dbadmin" "DB Administrator"
 
-# Export state directory for the binary
 # Export state directory for the binary
 export OPENCLAW_STATE_DIR="$OPENCLAW_STATE"
 
