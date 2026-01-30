@@ -113,13 +113,13 @@ if [ ! -f "$CONFIG_FILE" ]; then
 cat >"$CONFIG_FILE" <<EOF
 {
   "meta": {
-    "lastTouchedVersion": "2026.1.30-1",
+    "lastTouchedVersion": "2026.1.29",
     "lastTouchedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   },
   "wizard": {
     "lastRunMode": "local",
     "lastRunAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-    "lastRunVersion": "2026.1.30-1",
+    "lastRunVersion": "2026.1.29",
     "lastRunCommand": "doctor"
   },
   "diagnostics": {
